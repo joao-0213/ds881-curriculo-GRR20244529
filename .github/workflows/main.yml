@@ -1,0 +1,72 @@
+name: CI/CD Pipeline - Hugo
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  # 1. Linter / Static Analysis
+  lint:
+    name: Linter de Conteúdo (Markdown)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Instalar Markdownlint
+        run: npm install -g markdownlint-cli
+        
+      - name: Analisar arquivos MD
+        run: markdownlint "content/**/*.md" || true
+
+  # 2. Build da Aplicação Hugo
+  build:
+    name: Build da Aplicação
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+        with:
+          submodules: true 
+          fetch-depth: 0
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: 'latest'
+          extended: true
+
+      - name: Construir o site estático
+        run: hugo --minify
+
+      - name: Upload do artefato (GitHub Pages)
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './public'
+
+  # 3. Deploy
+  deploy:
+    name: Deploy para o GitHub Pages
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Executar Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
