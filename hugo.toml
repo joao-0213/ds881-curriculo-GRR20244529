@@ -1,0 +1,25 @@
+baseURL = 'https://joao-0213.github.io/ds881-curriculo-GRR20244529/'
+languageCode = 'pt-br'
+title = 'Currículo | João Victor Leal Gonçalves'
+theme = 'PaperMod'
+
+[params]
+defaultTheme = 'dark'
+description = 'Desenvolvedor de Software'
+author = 'João Victor Leal Gonçalves'
+ShowShareButtons = false
+ShowReadingTime = false
+disableThemeToggle = false
+
+[menu]
+  [[menu.main]]
+  identifier = "github"
+  name = "GitHub"
+  url = "https://github.com/joao-0213"
+  weight = 10
+
+  [[menu.main]]
+  identifier = "linkedin"
+  name = "LinkedIn"
+  url = "https://linkedin.com/in/lealjoaov"
+  weight = 20
